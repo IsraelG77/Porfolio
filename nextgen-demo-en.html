@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CI&T NextGen 2026 — Interns Dashboard Demo</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #0a0f1e;
+      --bg-panel: rgba(255, 255, 255, 0.03);
+      --bg-panel-hover: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #f472b6;       /* Pink */
+      --accent-grad1: #690037; /* Dark pink/red */
+      --accent-grad2: #8C0049; /* Magenta */
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      
+      --valid: #34d399;
+      --invalid: #ef4444;
+      --highlight: #3b82f6;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    
+    /* HEADER & TABS (Sticky) */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 15, 30, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem 0;
+    }
+    
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .header-title h1 {
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, #f472b6, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+    .header-title p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 2rem;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.75rem 0;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+    
+    /* MAIN CONTAINER */
+    main { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+    .tab-content { display: none; animation: fadeIn 0.4s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* GRID SYSTEM */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+    
+    /* PANELS / CARDS */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    }
+    
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #fff;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    
+    /* KPIs */
+    .kpi-val { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+    .kpi-sub { font-size: 0.8rem; color: var(--text-muted); }
+    .kpi-color-valid { color: var(--valid); }
+    .kpi-color-invalid { color: var(--invalid); }
+    
+    /* DARK MODE OVERRIDES */
+    table.dataTable { border-collapse: collapse !important; }
+    table.dataTable tbody tr { background-color: transparent !important; }
+    table.dataTable tbody tr:hover { background-color: var(--bg-panel-hover) !important; }
+    table.dataTable tbody td, table.dataTable thead th {
+      border-bottom: 1px solid var(--border) !important;
+      color: var(--text) !important;
+    }
+    table.dataTable thead th { font-weight: 600; background: rgba(0,0,0,0.2) !important; border-bottom: 2px solid var(--border) !important;}
+    
+    /* Fixing the dark text of native dataTable controls */
+    .dataTables_wrapper .dataTables_length, 
+    .dataTables_wrapper .dataTables_filter, 
+    .dataTables_wrapper .dataTables_info, 
+    .dataTables_wrapper .dataTables_paginate {
+      color: var(--text-muted) !important;
+      margin-bottom: 1rem;
+    }
+    .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button { 
+      color: var(--text) !important; 
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      background: var(--accent) !important;
+      color: #fff !important;
+      border: none !important;
+    }
+    
+    /* HEATMAP */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: auto repeat(5, 1fr);
+      gap: 2px;
+      margin-top: 1rem;
+    }
+    .heatmap-cell {
+      padding: 1rem 0.5rem;
+      text-align: center;
+      background: rgba(255,255,255,0.02);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    .heatmap-cell:hover { transform: scale(1.05); z-index: 10; cursor: default; }
+    .heatmap-header { background: rgba(0,0,0,0.3); font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem; text-align: center; border-radius: 4px;}
+    .heatmap-y-label { display: flex; align-items: center; justify-content: flex-end; padding-right: 1rem; font-size: 0.8rem; color: var(--text-muted); border-radius: 4px;}
+    
+    /* FUNNEL */
+    .funnel-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .funnel-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .funnel-label { width: 140px; font-size: 0.85rem; color: var(--text-muted); text-align: right; }
+    .funnel-bar-wrapper { flex: 1; height: 28px; background: rgba(0,0,0,0.3); border-radius: 14px; overflow: hidden; position: relative; }
+    .funnel-bar { height: 100%; border-radius: 14px; display: flex; align-items: center; padding: 0 1rem; font-size: 0.8rem; font-weight: 600; background: linear-gradient(90deg, var(--accent-grad1), var(--accent-grad2)); transition: width 1s ease; }
+    .funnel-val { width: 60px; font-weight: 600; text-align: left; }
+    
+    /* FILTERS */
+    .filters-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: var(--bg-panel);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .filter-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .filter-group label { font-size: 0.75rem; color: var(--text-muted); }
+    .filter-group select {
+      background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff;
+      padding: 0.4rem 0.8rem; border-radius: 6px; outline: none; font-family: inherit;
+    }
+    
+    /* PROGRESS BARS (D&I) */
+    .di-row { margin-bottom: 1rem; }
+    .di-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem; }
+    .di-bar-track { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+    .di-bar-fill { height: 100%; border-radius: 4px; }
+    
+    /* STATUS PILLS */
+    .status-pill {
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill-green { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);}
+    .pill-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);}
+    .pill-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);}
+    .pill-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);}
+    .pill-gray { background: rgba(255, 255, 255, 0.1); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.2);}
+    
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .tabs { display: none; /* Tabs collapse em mobile numa solução real, aqui só ocultamos para a demo ideal em Desktop */ }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <div class="header-title">
+        <h1><i class="fas fa-layer-group"></i> CI&T NextGen 2026 — Analytics</h1>
+        <p>Interactive Demo • 100% Mock Data (Client-side) • Logic based on Real Thresholds</p>
+      </div>
+      <div style="display: flex; gap: 1.5rem; align-items: center;">
+        <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.85rem; font-weight: 700;">
+          <a href="nextgen-demo.html" style="color: var(--text-muted); text-decoration: none; transition: 0.3s;">PT</a>
+          <span style="color: var(--border); font-weight: 400;">|</span>
+          <a href="nextgen-demo-en.html" style="color: #fff; text-shadow: 0 0 10px rgba(244, 114, 182, 0.8); text-decoration: none;">EN</a>
+        </div>
+        <a href="index-en.html" style="color:var(--text); text-decoration:none; font-size:0.9rem; border:1px solid var(--border); padding:0.5rem 1rem; border-radius:8px; transition: 0.3s; background: rgba(255,255,255,0.05);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <i class="fas fa-arrow-left"></i> Back to Portfolio
+        </a>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-target="tab-overview">Overview</button>
+      <button class="tab-btn" data-target="tab-assessments">Assessments</button>
+      <button class="tab-btn" data-target="tab-correlation">Score Correlation</button>
+      <button class="tab-btn" data-target="tab-diversity">D&I Analytics</button>
+      <button class="tab-btn" data-target="tab-report">Data Report</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="grid-4">
+        <div class="panel">
+          <div class="panel-title"><i class="fas fa-users"></i> Total Pipeline</div>
+          <div class="kpi-val" id="kpi-total">0</div>
+          <div class="kpi-sub">Registered Candidates</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><i class="fas fa-check-circle"></i> Valid Status</div>
+          <div class="kpi-val kpi-color-valid" id="kpi-valid">0</div>
+          <div class="kpi-sub" id="kpi-valid-sub">0% validity rate</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><i class="fas fa-times-circle"></i> Auto Triaged</div>
+          <div class="kpi-val kpi-color-invalid" id="kpi-invalid">0</div>
+          <div class="kpi-sub">Blocked (Eligibility/Duplicate)</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><i class="fas fa-flag-checkered"></i> Final Approvals</div>
+          <div class="kpi-val" style="color: var(--accent);" id="kpi-approved-final">0</div>
+          <div class="kpi-sub">In allocation window</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-title"><i class="fas fa-filter"></i> Conversion Funnel</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Conversion-oriented reading between stages for HR operational capacity sizing.
+          </p>
+          <div class="funnel-container" id="funnel-chart-container">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><i class="fas fa-ban"></i> Invalidation Reasons (Top)</div>
+          <div style="height: 250px; position: relative;">
+            <canvas id="invalidChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: ASSESSMENTS -->
+    <div id="tab-assessments" class="tab-content">
+      <div class="grid-4" id="assessment-status-cards">
+        <!-- Renderizado via JS -->
+      </div>
+      
+      <div class="panel">
+        <div class="panel-title"><i class="fas fa-chess-board"></i> Leveling Heatmap (Mindsight × Voxy)</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Business Logic: Displays population concentration based on situational tests and language fluency. 
+          Only candidates with a <strong>Valid Status</strong> who have completed both tests are plotted, allowing for density and outlier profile identification.
+        </p>
+        <div id="matrix-container" style="overflow-x: auto;">
+          <!-- Heatmap renderizado via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CORRELATION -->
+    <div id="tab-correlation" class="tab-content">
+      <div class="panel">
+        <div class="panel-title"><i class="fas fa-project-diagram"></i> Qualification × Cultural Match (Phase 1 Approved)</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Business Logic: Profile identification for final advancement (Approval Zone). The Y-axis shows the evaluated fit (Digaí Score) and the X-axis shows the technical skill aggregate (Qualified Score). Helps reduce bias by calibrating the decision between technical score and behavioral profile.
+        </p>
+        <div style="margin-bottom: 1rem;">
+          <button id="toggle-scatter-di" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s;">
+            <i class="fas fa-palette"></i> Toggle View: General vs Minority Groups
+          </button>
+        </div>
+        <div style="height: 450px; position: relative; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px;">
+          <canvas id="scatterChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: D&I -->
+    <div id="tab-diversity" class="tab-content">
+      <div class="grid-3" id="di-bars-container">
+        <!-- Barras de gênero, raça, pcd Renderizadas via JS -->
+      </div>
+      <div class="panel">
+        <div class="panel-title"><i class="fas fa-chart-line"></i> Minority Groups Evolution in Funnel (Survival Rate)</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Business Logic: Monitoring the survival rate of underrepresented groups in each stage (Multiple Candidates), to ensure that assessment stages and cut-off criteria do not cause systemic exclusion bias.
+        </p>
+        <div style="height: 350px;">
+          <canvas id="diFunnelChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: DATA REPORT -->
+    <div id="tab-report" class="tab-content">
+      
+      <div class="filters-bar" id="report-filters">
+        <!-- Dropdowns renderizados via JS -->
+      </div>
+
+      <div class="panel" style="padding: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+          <div class="panel-title" style="margin:0;"><i class="fas fa-table"></i> Analytical Detail / Pivot Table</div>
+          <button id="btn-export" style="background: linear-gradient(90deg, var(--accent-grad1), var(--accent-grad2)); border: none; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 12px rgba(105, 0, 55, 0.4);">
+            <i class="fas fa-download"></i> Export Custom CSV
+          </button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table id="dataTable" class="display nowrap" style="width:100%; font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th>Mock Name</th>
+                <th>State</th>
+                <th>Triage Status</th>
+                <th>Inv. Reason</th>
+                <th>Mindsight</th>
+                <th>Voxy</th>
+                <th>Qualified</th>
+                <th>Digaí Score</th>
+                <th>Minority?</th>
+                <th>Phase 1</th>
+                <th>Final Offer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Inject via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // ==========================================
+    // 1. DATA GENERATION LOGIC (MOCKING ENGINE)
+    // ==========================================
+    // Logic built entirely to generate a functional offline demo for the Portfolio, 
+    // replicating the decision architecture of the original app without violating private data.
+    
+    const states = ['SP','RJ','MG','RS','PR','SC','BA','PE','CE', 'GO'];
+    const invalidReasons = ['Incomplete', 'Mismatched Profile/Max Age', 'Duplicate Registration', 'No Academic Link'];
+    const mindSights = ['Lower', 'Lower Middle', 'Middle', 'Upper Middle', 'Superior'];
+    const voxyLevels = ['N/D', 'A1', 'A2', 'B1', 'B2', 'C1'];
+
+    // Deterministic Mock Generator with controlled distribution to keep UX realistic.
+    function generateMockData(count = 300) {
+      const data = [];
+      for(let i=0; i<count; i++) {
+        const id = (1000 + i).toString();
+        
+        // Business Rule: ~75% valid
+        const isValid = Math.random() < 0.75;
+        const validStatus = isValid ? 'Valid' : 'Invalid';
+        const invalidReason = isValid ? '-' : invalidReasons[Math.floor(Math.random() * invalidReasons.length)];
+        
+        let mIdx = 0, vIdx = 0;
+        let testedBoth = false;
+        
+        if (isValid) {
+          const randTest = Math.random();
+          if (randTest < 0.60) {
+            // Tested both (~60% real)
+            mIdx = Math.floor(Math.random() * mindSights.length);
+            vIdx = Math.floor(Math.random() * (voxyLevels.length - 1)) + 1; // 1 to 5
+            testedBoth = true;
+          } else if (randTest < 0.75) {
+            // Only Mindsight
+            mIdx = Math.floor(Math.random() * mindSights.length);
+            vIdx = 0;
+          } else if (randTest < 0.85) {
+            // Only Voxy
+            mIdx = -1; 
+            vIdx = Math.floor(Math.random() * (voxyLevels.length - 1)) + 1;
+          } else {
+            // None finished (Drop)
+            mIdx = -1;
+            vIdx = 0;
+          }
+        } else {
+          mIdx = Math.random() < 0.2 ? Math.floor(Math.random() * 3) : -1;
+          vIdx = Math.random() < 0.2 ? Math.floor(Math.random() * 2) : 0;
+        }
+
+        const msVal = (mIdx === -1) ? 'N/D' : mindSights[mIdx];
+        const voxVal = voxyLevels[vIdx];
+
+        // Random Scores for Scatter Plot
+        let qualScore = 0;
+        let digScore = 0;
+        if (isValid && testedBoth) {
+          // Normalization for realistic correlation aspect
+          const base = 45 + (mIdx * 8); 
+          qualScore = Math.min(100, Math.max(30, Math.floor(base + (Math.random() * 30 - 15))));
+          digScore = (Math.random() * 4 + 6).toFixed(1); // 6.0 to 10.0
+        }
+
+        // --- approval funnel thresholds ---
+        let passPhase1 = false;
+        let passPhase2 = false;
+
+        // Phase 1 Approved: Valid + QualScore > 50 + DigScore > 6.5
+        if (isValid && qualScore >= 52 && parseFloat(digScore) >= 6.8) {
+          passPhase1 = true;
+        }
+        
+        // Random adjustment to ensure volume for visuals
+        if (isValid && testedBoth && !passPhase1 && Math.random() < 0.15) passPhase1 = true; 
+
+        if (passPhase1) {
+          // Phase 2 Approv: Better behavioral performances
+          if (qualScore > 65 && parseFloat(digScore) > 7.5 && Math.random() < 0.7) {
+            passPhase2 = true;
+          } else if (Math.random() < 0.4) {
+             passPhase2 = true;
+          }
+        }
+
+        // Mock D&I (Diversity)
+        const gender = Math.random() < 0.45 ? 'Woman' : (Math.random() < 0.95 ? 'Man' : 'Prefer not to answer/Non-Binary');
+        const isBlack = Math.random() < 0.42; 
+        const race = isBlack ? 'Black/Brown' : 'White';
+        const isPCD = Math.random() < 0.04; 
+        const isMinority = (gender === 'Woman') || isBlack || isPCD;
+
+        data.push({
+          id: id,
+          name: `Candidate Mocked #${id}`,
+          state: states[Math.floor(Math.random() * states.length)],
+          validStatus: validStatus,
+          invalidReason: invalidReason,
+          mindsight: msVal,
+          voxy: voxVal,
+          qualified: qualScore.toString(),
+          digai: digScore.toString(),
+          gender: gender,
+          race: race,
+          pcd: isPCD ? 'Yes' : 'No',
+          isMinority: isMinority,
+          phase1: passPhase1 ? 'Approved' : (isValid ? 'Rejected' : '-'),
+          phase2: passPhase2 ? 'Offer' : (passPhase1 ? 'No Offer' : '-')
+        });
+      }
+      return data;
+    }
+
+    const dataSource = generateMockData(300);
+
+    // ==========================================
+    // 2. TAB NAVIGATION LOGIC (Vanilla JS)
+    // ==========================================
+    $('.tab-btn').on('click', function() {
+      $('.tab-btn').removeClass('active');
+      $(this).addClass('active');
+      
+      $('.tab-content').removeClass('active');
+      $('#' + $(this).data('target')).addClass('active');
+
+      // Dispara resize para os canvas ajustarem width automaticamente (fix bug chartjs escondido)
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    // ==========================================
+    // 3. UI RENDERING & DATA BINDING
+    // ==========================================
+    
+    function initDashboard() {
+      
+      // ----------- A) OVERVIEW TAB ----------- 
+      const total = dataSource.length;
+      const validos = dataSource.filter(d => d.validStatus === 'Valid');
+      const invalidos = dataSource.filter(d => d.validStatus === 'Invalid');
+      const aprovadosP1 = validos.filter(d => d.phase1 === 'Approved');
+      const aprovadosP2 = aprovadosP1.filter(d => d.phase2 === 'Offer');
+      const testaramAmbos = validos.filter(d => d.mindsight !== 'N/D' && d.voxy !== 'N/D');
+
+      // Bind KPIs
+      $('#kpi-total').text(total);
+      $('#kpi-valid').text(validos.length);
+      $('#kpi-valid-sub').text(`~${Math.round((validos.length / total) * 100)}% Conversion`);
+      $('#kpi-invalid').text(invalidos.length);
+      $('#kpi-approved-final').text(aprovadosP2.length);
+
+      // Funnel Construction
+      const steps = [
+        { label: 'Full Pipeline', val: total },
+        { label: 'Eligibility (Valid)', val: validos.length },
+        { label: 'Engagement (Tested Both)', val: testaramAmbos.length },
+        { label: 'Shortlist (Passed Phase 1)', val: aprovadosP1.length },
+        { label: 'Hired / Offer', val: aprovadosP2.length }
+      ];
+
+      const maxF = steps[0].val;
+      let funnelHTML = '';
+      steps.forEach((s, idx) => {
+        const p = (s.val / maxF) * 100;
+        const conv = idx === 0 ? '' : Math.round((s.val / steps[idx-1].val) * 100) + '% cv.';
+        funnelHTML += `
+          <div class="funnel-step">
+            <div class="funnel-label">${s.label}<br><span style="font-size:0.7rem; color:var(--accent);">${conv}</span></div>
+            <div class="funnel-bar-wrapper">
+              <div class="funnel-bar" style="width: ${Math.max(p, 4)}%"></div>
+            </div>
+            <div class="funnel-val">${s.val}</div>
+          </div>
+        `;
+      });
+      $('#funnel-chart-container').html(funnelHTML);
+
+      // Invalid Reasons Doughnut Chart
+      const invCounts = {};
+      invalidos.forEach(d => { invCounts[d.invalidReason] = (invCounts[d.invalidReason] || 0) + 1; });
+      new Chart(document.getElementById('invalidChart'), {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(invCounts),
+          datasets: [{ data: Object.values(invCounts), backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8C0049'], borderWidth: 0 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font:{size:11} } } }
+        }
+      });
+
+
+      // ----------- B) ASSESSMENTS TAB ----------- 
+      const soMinds = validos.filter(d => d.mindsight !== 'N/D' && d.voxy === 'N/D').length;
+      const soVoxy = validos.filter(d => d.mindsight === 'N/D' && d.voxy !== 'N/D').length;
+      const nenh = validos.filter(d => d.mindsight === 'N/D' && d.voxy === 'N/D').length;
+
+      $('#assessment-status-cards').html(`
+        <div class="panel" style="text-align:center;">
+          <div style="font-size:2rem; color:var(--valid); font-weight:700;">${testaramAmbos.length}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted)">Tested Both</div>
+        </div>
+        <div class="panel" style="text-align:center;">
+          <div style="font-size:2rem; color:var(--highlight); font-weight:700;">${soMinds}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted)">Only Mindsight</div>
+        </div>
+        <div class="panel" style="text-align:center;">
+          <div style="font-size:2rem; color:var(--accent); font-weight:700;">${soVoxy}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted)">Only Voxy</div>
+        </div>
+        <div class="panel" style="text-align:center;">
+          <div style="font-size:2rem; color:var(--invalid); font-weight:700;">${nenh}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted)">None (Drop off)</div>
+        </div>
+      `);
+
+      // CSS Grid Heatmap Generator
+      let heatHTML = '<div class="heatmap-grid"><div class="heatmap-header" style="background:transparent;"></div>';
+      
+      const vLevels = ['A1', 'A2', 'B1', 'B2', 'C1']; // X axis
+      vLevels.forEach(v => heatHTML += `<div class="heatmap-header">${v}</div>`);
+      
+      const mindLevels = ['Superior', 'Upper Middle', 'Middle', 'Lower Middle', 'Lower']; // Y axis (inverted visual)
+      
+      let maxCell = 1;
+      const heatMapData = {};
+      mindLevels.forEach(m => {
+        heatMapData[m] = {};
+        vLevels.forEach(v => {
+          const c = validos.filter(d => d.mindsight === m && d.voxy === v).length;
+          heatMapData[m][v] = c;
+          if(c > maxCell) maxCell = c;
+        });
+      });
+
+      mindLevels.forEach(m => {
+        heatHTML += `<div class="heatmap-y-label">${m}</div>`;
+        vLevels.forEach(v => {
+          const count = heatMapData[m][v];
+          const intensity = count === 0 ? 0.02 : Math.max(0.12, count / maxCell);
+          const color = `rgba(140, 0, 73, ${intensity})`; // Magenta base opacity
+          let styleMod = count > 0 ? `cursor:pointer; font-weight:700; color:#fff;` : `color:rgba(255,255,255,0.2)`;
+          heatHTML += `<div class="heatmap-cell" style="background: ${color}; ${styleMod}" title="${count} candidates (Mock)">${count}</div>`;
+        });
+      });
+      heatHTML += '</div>';
+      $('#matrix-container').html(heatHTML);
+
+
+      // ----------- C) CORRELATION TAB (Scatter Plot) ----------- 
+      const scatterSet = testaramAmbos.map(d => ({
+        x: parseFloat(d.qualified),
+        y: parseFloat(d.digai),
+        name: d.name,
+        isMinority: d.isMinority,
+        aprovadoFinal: d.phase2 === 'Offer'
+      }));
+
+      const ctxScat = document.getElementById('scatterChart');
+      let isColorDi = false;
+      
+      const renderScatter = () => {
+        return new Chart(ctxScat, {
+          type: 'scatter',
+          data: {
+             // Divisão em dois datasets explícitos pelo toggle
+            datasets: [
+              {
+                label: isColorDi ? 'Minority (Diversity)' : 'Hired (Offer Zone)',
+                data: scatterSet.filter(d => isColorDi ? d.isMinority : d.aprovadoFinal),
+                backgroundColor: isColorDi ? '#f472b6' : '#34d399',
+                pointRadius: 6,
+                borderColor: 'rgba(255,255,255,0.7)',
+                borderWidth: 1
+              },
+              {
+                label: isColorDi ? 'Other Profiles' : 'Not Hired / Valid',
+                data: scatterSet.filter(d => isColorDi ? !d.isMinority : !d.aprovadoFinal),
+                backgroundColor: 'rgba(255,255,255,0.15)',
+                pointRadius: 4,
+                borderWidth: 0
+              }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {
+              x: { title: { display: true, text: 'Qualified Score (Tech Threshold %)', color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 30, max: 100 },
+              y: { title: { display: true, text: 'Digaí Score (Cultural pt/10)', color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 5, max: 10.5 }
+            },
+            plugins: {
+              legend: { labels: { color: '#e2e8f0'} },
+              tooltip: {
+                callbacks: { label: (ctx) => `${ctx.raw.name} | Tech: ${ctx.raw.x}% | Fit: ${ctx.raw.y}` }
+              }
+            }
+          }
+        });
+      };
+      
+      let chartInst = renderScatter();
+      $('#toggle-scatter-di').click(function() {
+        isColorDi = !isColorDi;
+        chartInst.destroy();
+        chartInst = renderScatter();
+        // Update button text logic (not needed if it's broad text, but useful for feedback)
+      });
+
+
+      // ----------- D) D&I TAB (Diversity & Inclusion tracking) ----------- 
+      const buildBar = (title, items) => {
+        let t = sum = 0; items.forEach(i => t += i.v);
+        let html = `<div class="panel"><div class="panel-title">${title}</div>`;
+        items.forEach(i => {
+          const pct = Math.round((i.v / t) * 100) || 0;
+          html += `
+            <div class="di-row">
+              <div class="di-label"><span>${i.l}</span><span style="color:var(--text-muted)">${pct}% (${i.v})</span></div>
+              <div class="di-bar-track">
+                <div class="di-bar-fill" style="width:${pct}%; background:${i.c};"></div>
+              </div>
+            </div>
+          `;
+        });
+        html += `</div>`;
+        return html;
+      };
+
+      const hCount = validos.filter(d => d.gender === 'Man').length;
+      const mCount = validos.filter(d => d.gender === 'Woman').length;
+      const pCount = validos.filter(d => d.gender === 'Prefer not to answer/Non-Binary').length;
+      const whiteC = validos.filter(d => d.race === 'White').length;
+      const blackC = validos.filter(d => d.race === 'Black/Brown').length;
+      const pcdY   = validos.filter(d => d.pcd === 'Yes').length;
+      const pcdN   = validos.filter(d => d.pcd === 'No').length;
+
+      $('#di-bars-container').html(
+        buildBar('<i class="fas fa-venus-mars"></i> Gender (Valid Base)', [
+          {l: 'Woman', v: mCount, c: '#f472b6'}, {l: 'Man', v: hCount, c: '#3b82f6'}, {l: 'Not Disclosed', v: pCount, c: '#94a3b8'}
+        ]) +
+        buildBar('<i class="fas fa-globe"></i> Race/Ethnicity', [
+          {l: 'Black/Brown (Self-declared)', v: blackC, c: '#c084fc'}, {l: 'White', v: whiteC, c: '#34d399'}
+        ]) +
+        buildBar('<i class="fas fa-wheelchair"></i> PwD', [
+          {l: 'Affirmative Vacancy', v: pcdY, c: '#fbbf24'}, {l: 'No', v: pcdN, c: '#64748b'}
+        ])
+      );
+
+      // Survival Rate Line Chart
+      const minTotals = steps.map((s, idx) => {
+        let arr = [];
+        if(idx === 0) arr = dataSource;
+        if(idx === 1) arr = validos;
+        if(idx === 2) arr = testaramAmbos;
+        if(idx === 3) arr = aprovadosP1;
+        if(idx === 4) arr = aprovadosP2;
+        const minCount = arr.filter(d => d.isMinority).length;
+        return ((minCount / (arr.length || 1)) * 100).toFixed(1);
+      });
+
+      new Chart(document.getElementById('diFunnelChart'), {
+        type: 'line',
+        data: {
+          labels: ['1. Start', '2. Triage', '3. Tests', '4. Shortlist', '5. Hired'],
+          datasets: [{
+            label: '% Surviving Minorities by Stage (Women, Black/Brown, PwD)',
+            data: minTotals,
+            borderColor: '#f472b6',
+            backgroundColor: 'rgba(244, 114, 182, 0.2)',
+            fill: true,
+            pointRadius: 6,
+            pointBackgroundColor: '#c084fc',
+            tension: 0.25
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { 
+            y: { min: 0, max: 100, ticks: { callback: (v) => v + '%' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { grid: { color: 'rgba(255,255,255,0.05)' } }
+          },
+          plugins: { legend: { labels: { color: '#e2e8f0' } } }
+        }
+      });
+
+
+      // ----------- E) DATA REPORT TAB (DataTables Injection) ----------- 
+      const tbody = $('#dataTable tbody');
+      dataSource.forEach(d => {
+        const status = d.validStatus === 'Valid' ? `<span class="status-pill pill-green">Valid</span>` : `<span class="status-pill pill-red">Invalid</span>`;
+        const minHtml = d.isMinority ? `<span style="color:#f472b6" title="Cross-diversity"><i class="fas fa-star"></i> Yes</span>` : 'No';
+        const p1Html = d.phase1 === 'Approved' ? `<span class="status-pill pill-blue">Approved</span>` : (d.phase1 === 'Rejected'? `<span class="status-pill pill-gray">Rejected</span>` : '-');
+        const p2Html = d.phase2 === 'Offer' ? `<span class="status-pill pill-purple">Offer</span>` : (d.phase2 === 'No Offer'? `<span class="status-pill pill-gray">Drop</span>` : '-');
+        
+        tbody.append(`
+          <tr>
+            <td><strong>${d.name}</strong></td>
+            <td>${d.state}</td>
+            <td>${status}</td>
+            <td><small>${d.invalidReason}</small></td>
+            <td>${d.mindsight}</td>
+            <td>${d.voxy}</td>
+            <td>${d.qualified > 0 ? d.qualified : '-'}</td>
+            <td>${d.digai > 0 ? d.digai : '-'}</td>
+            <td>${minHtml}</td>
+            <td>${p1Html}</td>
+            <td>${p2Html}</td>
+          </tr>
+        `);
+      });
+
+      const table = $('#dataTable').DataTable({
+        pageLength: 20,
+        scrollX: true,
+        // language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
+        dom: '<"top"lf>rt<"bottom"ip><"clear">', // clean native UI
+      });
+
+      // Custom Dropdown Filters Mapping
+      const filterFields = [
+        { id: 'f_status', label: 'Initial Status', col: 2, opts: ['Valid', 'Invalid'] },
+        { id: 'f_estado', label: 'State/Region', col: 1, opts: states },
+        { id: 'f_mindsight', label: 'Mindsight Level', col: 4, opts: mindSights },
+        { id: 'f_fase1', label: 'Phase 1 (Shortlist)', col: 9, opts: ['Approved', 'Rejected'] },
+        { id: 'f_offer', label: 'Final Offer', col: 10, opts: ['Offer', 'Drop'] }
+      ];
+
+      // Inject & Bind events for Custom Filters
+      filterFields.forEach(f => {
+        let html = `<div class="filter-group"><label>${f.label}</label><select id="${f.id}"><option value="">All Candidates</option>`;
+        f.opts.forEach(o => html += `<option value="${o}">${o}</option>`);
+        html += `</select></div>`;
+        $('#report-filters').append(html);
+        
+        $(`#${f.id}`).on('change', function() {
+          const val = $.fn.dataTable.util.escapeRegex($(this).val());
+          table.column(f.col).search(val ? val : '', true, false).draw();
+        });
+      });
+
+      // CSV Export Button logic
+      $('#btn-export').click(function() {
+        let csv = 'Mock_Name,State,Triage_Status,Inv_Reason,Mindsight,Voxy,Qualified,Digai,Minority_Flag,Phase1,Final_Offer\n';
+        // search "applied" allows exporting the filtered dataset!
+        table.rows({ search: 'applied' }).data().each(function (value) {
+            // Strip HTML tags before sending to CSV array line
+            csv += value.map(cell => `"${cell.replace(/<[^>]+>/g, '')}"`).join(',') + '\n';
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'export_nextgen_demo_data_en.csv';
+        a.click();
+      });
+
+    }
+
+    $(document).ready(initDashboard);
+  </script>
+</body>
+</html>

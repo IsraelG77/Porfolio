@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Israel Gilbernon — People Analytics & HR Systems</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       TOKENS
+    ═══════════════════════════════════════════════════════ */
+    :root {
+      --bg:          #0a0f1e;
+      --bg-2:        #0f172a;
+      --bg-card:     #111827;
+      --bg-card-2:   #1e293b;
+      --border:      rgba(255,255,255,0.08);
+      --border-h:    rgba(255,255,255,0.16);
+      --text:        #f1f5f9;
+      --text-mid:    #cbd5e1;
+      --text-muted:  #64748b;
+      --accent:      #818cf8;
+      --accent-2:    #6366f1;
+      --accent-glow: rgba(99,102,241,0.25);
+      --success:     #34d399;
+      --warning:     #fbbf24;
+      --danger:      #f87171;
+      --pink:        #f472b6;
+      --cyan:        #22d3ee;
+      --orange:      #fb923c;
+      --grad-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --grad-2: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      --grad-hero: linear-gradient(135deg, #0a0f1e 0%, #0f172a 50%, #1a0a2e 100%);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+      --shadow-glow: 0 0 40px rgba(99,102,241,0.15);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ═══ SCROLLBAR ═══ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-2); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 3px; }
+
+    /* ═══════════════════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════════════════ */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex; align-items: center;
+      transition: background 0.3s;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .nav-logo {
+      font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em;
+      color: #ffffff;
+      text-decoration: none;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.4), 0 0 20px rgba(192, 132, 252, 0.7);
+    }
+    .nav-links { display: flex; gap: 0.25rem; list-style: none; }
+    .nav-links a {
+      display: block; padding: 0.4rem 0.85rem;
+      color: var(--text-muted); font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--bg-card-2); }
+    
+    .lang-switch {
+      display: flex; gap: 0.5rem; align-items: center; font-size: 0.85rem; font-weight: 700;
+    }
+    .lang-switch a {
+      color: var(--text-muted); text-decoration: none; transition: 0.3s;
+    }
+    .lang-switch a.active, .lang-switch a:hover {
+      color: #fff; text-shadow: 0 0 10px rgba(192, 132, 252, 0.8);
+    }
+    .lang-separator { color: var(--border); font-weight: 400; }
+
+    /* ═══════════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      background: var(--grad-hero);
+      display: flex; align-items: center;
+      padding: 6rem 2rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    /* grid dots background */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(99,102,241,0.15) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+    /* glow orbs */
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      top: -200px; right: -200px;
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr auto; gap: 4rem; align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+      color: var(--accent); padding: 0.35rem 0.9rem;
+      border-radius: 100px; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge span { width: 7px; height: 7px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.3); } }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      line-height: 1.1; margin-bottom: 0.5rem;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+      background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.15rem; color: var(--text-mid); font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+    .hero-desc {
+      font-size: 1rem; color: var(--text-muted); max-width: 580px;
+      line-height: 1.7; margin-bottom: 2rem;
+    }
+    .hero-ctas { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.65rem 1.4rem; border-radius: var(--radius-sm);
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      transition: all 0.2s; cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: var(--grad-2); color: white;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.5); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.06); color: var(--text-mid);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(--text); border-color: var(--border-h); }
+
+    .hero-stats {
+      display: flex; gap: 2rem; margin-top: 2.5rem;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .hero-stat-num {
+      font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em;
+      background: var(--grad-2); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    .hero-avatar {
+      width: 220px; height: 220px; border-radius: 50%;
+      background: linear-gradient(135deg, #1e293b, #2d1b69);
+      border: 2px solid rgba(99,102,241,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; color: var(--accent);
+      box-shadow: 0 0 60px rgba(99,102,241,0.2), var(--shadow-card);
+      flex-shrink: 0; position: relative;
+    }
+    .hero-avatar::after {
+      content: '';
+      position: absolute; inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(99,102,241,0.15);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SHARED SECTION STYLES
+    ═══════════════════════════════════════════════════════ */
+    section { padding: 5rem 2rem; }
+    section:nth-child(even) { background: var(--bg-2); }
+
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+
+    .section-label {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-label::before {
+      content: ''; display: block; width: 20px; height: 2px;
+      background: var(--accent);
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem;
+    }
+    .section-sub {
+      color: var(--text-muted); font-size: 1rem; max-width: 560px; margin-bottom: 3rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════════════════════════ */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;
+    }
+    .about-text p {
+      color: var(--text-mid); line-height: 1.8; margin-bottom: 1rem; font-size: 0.975rem;
+    }
+    .about-text p strong { color: var(--text); }
+    .about-facts { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+    .about-fact {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 0.9rem; color: var(--text-mid);
+    }
+    .about-fact i { color: var(--accent); width: 16px; }
+
+    .about-highlights { display: flex; flex-direction: column; gap: 1rem; }
+    .highlight-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .highlight-card:hover { border-color: var(--border-h); transform: translateX(4px); }
+    .highlight-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 1rem; flex-shrink: 0;
+    }
+    .highlight-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; }
+    .highlight-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ═══════════════════════════════════════════════════════
+       DIFFERENTIAL
+    ═══════════════════════════════════════════════════════ */
+    .differential-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    }
+    .differential-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .differential-card:hover { border-color: var(--border-h); transform: translateY(-3px); }
+    .differential-step {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+    .differential-title {
+      font-size: 1rem; font-weight: 700; line-height: 1.35;
+      margin-bottom: 0.6rem;
+    }
+    .differential-desc {
+      font-size: 0.875rem; color: var(--text-mid); line-height: 1.7;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       EXPERIENCE TIMELINE
+    ═══════════════════════════════════════════════════════ */
+    .timeline { position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 23px; top: 8px; bottom: 8px;
+      width: 1px; background: linear-gradient(to bottom, var(--accent-2), transparent);
+    }
+    .timeline-item {
+      display: flex; gap: 2rem; margin-bottom: 2.5rem; position: relative;
+    }
+    .timeline-dot {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 1.1rem; flex-shrink: 0; z-index: 1;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .timeline-item:hover .timeline-dot { border-color: var(--accent-2); background: rgba(99,102,241,0.1); }
+    .timeline-content {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem 1.75rem;
+      flex: 1; transition: border-color 0.2s;
+    }
+    .timeline-item:hover .timeline-content { border-color: var(--border-h); }
+    .timeline-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 1rem; margin-bottom: 0.5rem; flex-wrap: wrap;
+    }
+    .timeline-role { font-weight: 700; font-size: 1rem; }
+    .timeline-company {
+      font-size: 0.85rem; color: var(--accent); font-weight: 600; margin-bottom: 0.2rem;
+    }
+    .timeline-period {
+      font-size: 0.78rem; color: var(--text-muted); white-space: nowrap;
+      background: var(--bg-card-2); padding: 0.25rem 0.6rem; border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+    .timeline-desc { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; }
+    .timeline-bullets { margin: 0.75rem 0 0 1rem; }
+    .timeline-bullets li { font-size: 0.85rem; color: var(--text-mid); margin-bottom: 0.4rem; line-height: 1.6; }
+    .timeline-bullets li::marker { color: var(--accent); }
+    .timeline-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+    .tag {
+      font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem;
+      border-radius: 100px; border: 1px solid;
+    }
+    .tag-blue   { color: #93c5fd; border-color: rgba(147,197,253,0.25); background: rgba(147,197,253,0.08); }
+    .tag-purple { color: #c4b5fd; border-color: rgba(196,181,253,0.25); background: rgba(196,181,253,0.08); }
+    .tag-green  { color: #6ee7b7; border-color: rgba(110,231,183,0.25); background: rgba(110,231,183,0.08); }
+    .tag-orange { color: #fcd34d; border-color: rgba(252,211,77,0.25);  background: rgba(252,211,77,0.08); }
+    .tag-pink   { color: #f9a8d4; border-color: rgba(249,168,212,0.25); background: rgba(249,168,212,0.08); }
+    .tag-cyan   { color: #67e8f9; border-color: rgba(103,232,249,0.25); background: rgba(103,232,249,0.08); }
+
+    /* ═══════════════════════════════════════════════════════
+       PROJECTS
+    ═══════════════════════════════════════════════════════ */
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow-card);
+      display: flex; flex-direction: column;
+    }
+    .project-banner {
+      height: 6px;
+    }
+    .project-body { padding: 1.75rem; flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+    .project-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .project-icon {
+      width: 44px; height: 44px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .project-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.2rem; }
+    .project-subtitle { font-size: 0.8rem; color: var(--text-muted); }
+    .project-desc { font-size: 0.875rem; color: var(--text-mid); line-height: 1.7; }
+    .project-metrics {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+    }
+    .project-metric {
+      background: var(--bg-card-2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.5rem 0.85rem; flex: 1; min-width: 90px;
+    }
+    .project-metric-val { font-size: 1.05rem; font-weight: 700; }
+    .project-metric-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
+    .project-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .project-stack { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+    /* ═══════════════════════════════════════════════════════
+       SKILLS
+    ═══════════════════════════════════════════════════════ */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+    .skills-group {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .skills-group:hover { border-color: var(--border-h); }
+    .skills-group-title {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.85rem; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+    .skills-group-title i { color: var(--accent); }
+    .skills-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .skill-pill {
+      font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.75rem;
+      border-radius: 100px; background: var(--bg-card-2);
+      border: 1px solid var(--border); color: var(--text-mid);
+      transition: all 0.15s;
+    }
+    .skill-pill:hover { border-color: var(--accent-2); color: var(--accent); background: rgba(99,102,241,0.08); }
+
+    /* ═══════════════════════════════════════════════════════
+       EDUCATION / CERTIFICATIONS
+    ═══════════════════════════════════════════════════════ */
+    .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .edu-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .edu-card:hover { border-color: var(--border-h); transform: translateY(-2px); }
+    .edu-icon {
+      width: 44px; height: 44px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .edu-degree { font-weight: 700; font-size: 0.925rem; margin-bottom: 0.2rem; }
+    .edu-inst { font-size: 0.82rem; color: var(--accent); font-weight: 600; margin-bottom: 0.15rem; }
+    .edu-period { font-size: 0.78rem; color: var(--text-muted); }
+
+    .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .cert-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 0.75rem;
+      transition: border-color 0.2s;
+    }
+    .cert-card:hover { border-color: rgba(99,102,241,0.4); }
+    .cert-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .cert-name { font-size: 0.83rem; font-weight: 600; line-height: 1.4; }
+    .cert-issuer { font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; }
+
+    /* ═══════════════════════════════════════════════════════
+       CONTACT
+    ═══════════════════════════════════════════════════════ */
+    .contact-wrapper {
+      max-width: 720px; margin: 0 auto; text-align: center;
+    }
+    .contact-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+    .contact-link {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.75rem 1.5rem; border-radius: var(--radius-sm);
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text-mid); transition: all 0.2s;
+    }
+    .contact-link:hover { border-color: var(--accent-2); color: var(--accent); background: rgba(99,102,241,0.08); transform: translateY(-2px); }
+    .contact-link i { font-size: 1rem; }
+
+    /* ═══════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════ */
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 2rem; text-align: center;
+      font-size: 0.8rem; color: var(--text-muted);
+    }
+    footer span { color: var(--accent); }
+
+    /* ═══════════════════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════════════════ */
+    .fade-up {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-avatar { display: none; }
+      .about-grid { grid-template-columns: 1fr; }
+      .differential-grid { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .edu-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .hero-stats { flex-wrap: wrap; gap: 1.25rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAV ═══ -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">Israel Gilbernon</a>
+      <ul class="nav-links">
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#experiencia">Experiência</a></li>
+        <li><a href="#projetos">Projetos</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#educacao">Formação</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+      <div class="lang-switch">
+        <a href="index.html" class="active">PT</a>
+        <span class="lang-separator">|</span>
+        <a href="index-en.html">EN</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="inicio">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span></span>
+          People Analytics · HR Systems · Automation
+        </div>
+        <h1>
+          Estruturo decisões<br>
+          <span class="grad">de People com dados e sistemas</span>
+        </h1>
+        <div class="hero-subtitle">Meu trabalho começa na estruturação do dado bruto, garantindo que a métrica final seja um reflexo fiel da realidade operacional e não um ruído estatístico.</div>
+        <p class="hero-desc">
+          Construo a camada lógica e operacional que sustenta decisões de RH: dashboards,
+          regras de negócio, integrações, governança de dados e fluxos que reduzem fricção,
+          aumentam confiabilidade e habilitam a autonomia decisória da liderança em tempo real.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener">
+            <i class="fab fa-linkedin"></i> LinkedIn
+          </a>
+          <a class="btn btn-ghost" href="Israel_Gilbernon_CV.pdf" target="_blank">
+            <i class="fas fa-file-user"></i> Baixar CV
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-num">17.5k+</div>
+            <div class="hero-stat-label">candidatos em programa de recrutamento em escala</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">90%</div>
+            <div class="hero-stat-label">de redução no tempo de análise com dashboard end-to-end</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">88%</div>
+            <div class="hero-stat-label">de redução no tempo de onboarding com automação</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">70%</div>
+            <div class="hero-stat-label">de redução no tempo de análise em compliance e off-limits</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="hero-avatar">
+        <i class="fas fa-sitemap"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SOBRE ═══ -->
+  <section id="sobre">
+    <div class="section-inner">
+      <div class="section-label">Sobre</div>
+      <h2 class="section-title">Qualificando como organizações decidem sobre pessoas</h2>
+      <p class="section-sub">Da psicologia à arquitetura de decisão em RH: uma trajetória construída entre critério, operação e tecnologia.</p>
+
+      <div class="about-grid fade-up">
+        <div class="about-text">
+          <p>
+            Minha experiência no ambiente corporativo evidenciou um padrão recorrente: <strong>decisões críticas tomadas com alta convicção, mas baixa estruturação</strong> — critérios pouco explícitos, rastreabilidade limitada, baixa integração entre sistemas e custos invisíveis para candidatos e para a organização.
+          </p>
+          <p>
+            Ao longo da minha trajetória em <strong>Tech Recruitment, People Ops, HR Systems e People Analytics</strong>, estive simultaneamente dentro dos processos e com visão crítica sobre eles, operando a rotina e questionando como decisões eram formuladas, justificadas e operacionalizadas.
+          </p>
+          <p>
+            Hoje atuo qualificando esses processos: combinando <strong>análise de dados, desenho de fluxo, automação e diagnóstico comportamental</strong> aplicado à leitura de processos corporativos. Meu objetivo real é atuar como um <strong>Arquiteto de Decisão</strong>, aumentando clareza e consistência nas definições sobre pessoas.
+          </p>
+          <div class="about-facts">
+            <div class="about-fact"><i class="fas fa-map-marker-alt"></i> Salvador, Bahia, Brasil</div>
+            <div class="about-fact"><i class="fas fa-language"></i> Português & Inglês (bilíngue)</div>
+            <div class="about-fact"><i class="fas fa-graduation-cap"></i> Psicólogo — UNIFACS</div>
+            <div class="about-fact"><i class="fas fa-building"></i> CI&T — People Operations & Analytics</div>
+          </div>
+        </div>
+        <div class="about-highlights">
+          <div class="highlight-card">
+            <div class="highlight-icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+              <div class="highlight-title">People Analytics em escala</div>
+              <div class="highlight-desc">Estruturas analíticas end-to-end para programas com 17.500+ candidatos, conectando funil, D&I, avaliações por fase e thresholds de decisão em tempo real.</div>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="highlight-icon"><i class="fas fa-robot"></i></div>
+            <div>
+              <div class="highlight-title">Automação e integração de sistemas</div>
+              <div class="highlight-desc">Python, Google Apps Script e integrações com ATS para reduzir trabalho manual, consolidar fontes e aumentar a confiabilidade operacional de RH.</div>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="highlight-icon"><i class="fas fa-users-gear"></i></div>
+            <div>
+              <div class="highlight-title">Decisão operacional e workforce planning</div>
+              <div class="highlight-desc">Modelos e leituras de capacidade para antecipação de gargalos, priorização de esforço e capacitação de decisões executivas da operação.</div>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="highlight-icon"><i class="fas fa-layer-group"></i></div>
+            <div>
+              <div class="highlight-title">Governança de dados para People</div>
+              <div class="highlight-desc">Consolidação de múltiplas fontes, deduplicação, normalização de status e leitura de inconsistências para sustentar decisão com menos ambiguidade.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DIFERENCIAL ═══ -->
+  <section id="diferencial">
+    <div class="section-inner">
+      <div class="section-label">Diferencial</div>
+      <h2 class="section-title">Meu diferencial não está na visualização. Está na estrutura que torna a decisão de People mais explícita e confiável.</h2>
+      <p class="section-sub">Os dashboards são a interface final. O valor real está em traduzir problema, critério, dados e operação em uma camada decisória utilizável.</p>
+
+      <div class="differential-grid fade-up">
+        <div class="differential-card">
+          <div class="differential-step">01 · Leitura</div>
+          <div class="differential-title">Entendo o problema de People por dentro da operação</div>
+          <div class="differential-desc">Minha base em psicologia e experiência em recrutamento, people ops e BP me permitem ler onde a decisão perde qualidade: critérios frágeis, etapas mal definidas, fricções entre áreas e baixa rastreabilidade.</div>
+        </div>
+        <div class="differential-card">
+          <div class="differential-step">02 · Estrutura</div>
+          <div class="differential-title">Traduzo critério em regra, processo e sistema</div>
+          <div class="differential-desc">Transformo lógica tácita em fluxo explícito: thresholds, elegibilidade, consolidação de bases, governança de dados, integrações e automações que sustentam a decisão além do feeling.</div>
+        </div>
+        <div class="differential-card">
+          <div class="differential-step">03 · Aplicação</div>
+          <div class="differential-title">Entrego visibilidade analítica com utilidade operacional</div>
+          <div class="differential-desc">O resultado não é um dashboard bonito. É uma estrutura que reduz tempo de análise, aumenta confiabilidade, melhora coordenação entre times e apoia líderes a decidir com mais clareza.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EXPERIÊNCIA ═══ -->
+  <section id="experiencia">
+    <div class="section-inner">
+      <div class="section-label">Experiência</div>
+      <h2 class="section-title">Trajetória Profissional</h2>
+      <p class="section-sub">5+ anos construindo na intersecção entre RH, dados e tecnologia.</p>
+
+      <div class="timeline fade-up">
+
+        <!-- CI&T -->
+        <div class="timeline-item">
+          <div class="timeline-dot"><i class="fas fa-building"></i></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <div>
+                <div class="timeline-role">Talent Solutions Specialist — People Operations & Analytics</div>
+                <div class="timeline-company">CI&T</div>
+              </div>
+              <div class="timeline-period">Mai 2024 – Presente · 2 anos</div>
+            </div>
+            <ul class="timeline-bullets">
+              <li><strong>Autonomia Decisória em Larga Escala</strong> (NextGen 2025–2026 | 17.500+ candidatos): Mais do que processar volume, defini thresholds (limiares) de decisão, estruturando a autonomia e habilitando lideranças a decidir em tempo real; redução de 90% no tempo de análise.</li>
+              <li><strong>Workforce Planning preditivo</strong>: Desenhei dashboard com modelo de regressão linear para antecipação de gargalos de SLA e habilitando decisões executivas de capacidade.</li>
+              <li><strong>Stack de Governança e Onboarding</strong>: Implementei integrações (Python + GAS + Lever) focadas em eliminar a ambiguidade do RH. Além de reduzir 88% do tempo do processo, atuei como "garante" da governança e confiabilidade dos dados unificados de múltiplas fontes.</li>
+              <li><strong>Off-Limits (compliance global)</strong>: Estruturei a automação da verificação de restrições contratuais entre clientes, reduzindo 70% do tempo de análise.</li>
+              <li><strong>Redesenho de processos globais</strong>: Conduzi Value Stream Mapping cross-funcional para identificação de gargalos.</li>
+              <li><strong>Mobilidade interna global</strong>: Desenhei governança, intervenções operacionais e visibilidade analítica para a estruturação da tomada de decisão.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag tag-blue">Python</span>
+              <span class="tag tag-blue">Google Apps Script</span>
+              <span class="tag tag-purple">Power BI</span>
+              <span class="tag tag-purple">Looker</span>
+              <span class="tag tag-green">Lever ATS</span>
+              <span class="tag tag-orange">People Analytics</span>
+              <span class="tag tag-pink">D&I</span>
+              <span class="tag tag-cyan">VSM / Lean</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sinoma -->
+        <div class="timeline-item">
+          <div class="timeline-dot"><i class="fas fa-industry"></i></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <div>
+                <div class="timeline-role">Analista de RH — People Analytics & Talent Acquisition</div>
+                <div class="timeline-company">Sinoma Wind Power Blade Brasil · Indústria multinacional (liderança chinesa)</div>
+              </div>
+              <div class="timeline-period">Out 2023 – Mar 2024 · 6 meses · Camaçari, BA</div>
+            </div>
+            <ul class="timeline-bullets">
+              <li><strong>Estruturação de People Analytics</strong>: dashboards em Power BI, definição de KPIs/OKRs e diagnósticos organizacionais para operação em ramp-up industrial acelerado (Brasil–China).</li>
+              <li><strong>Mapeamento e redesenho de processos de RH</strong> com metodologia Lean; implementei requisitos e padronização de fluxos da ISO 9001 — liderando auditorias e documentação.</li>
+              <li>Estruturação de onboarding multicultural e Plano de Cargos e Salários por competências como base para governança de pessoas.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag tag-blue">Power BI</span>
+              <span class="tag tag-orange">KPIs / OKRs</span>
+              <span class="tag tag-cyan">Lean</span>
+              <span class="tag tag-pink">ISO 9001</span>
+              <span class="tag tag-green">People Analytics</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SENAI -->
+        <div class="timeline-item">
+          <div class="timeline-dot"><i class="fas fa-microchip"></i></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <div>
+                <div class="timeline-role">Estagiário - Tech Recruiter & Sourcer / Business Partner</div>
+                <div class="timeline-company">SENAI CIMATEC · Centro de inovação e tecnologia</div>
+              </div>
+              <div class="timeline-period">Abr 2021 – Dez 2022 · 1 ano 9 meses · Salvador, BA</div>
+            </div>
+            <ul class="timeline-bullets">
+              <li><strong>Desenvolvimento de KPIs e dashboards analíticos</strong> em Power BI, Python e Excel — ponto de origem da construção de ferramentas de dados para RH.</li>
+              <li><strong>Otimização de Processos (SharePoint)</strong>: Estruturação de fluxos para avaliações e feedbacks, visando o recrutamento, avaliação ágil e o acompanhamento sistemático de performance de times técnicos.</li>
+              <li><strong>Implementação do ATS Gupy</strong>: configuração de fluxos, estruturação de etapas e garantia de rastreabilidade do processo seletivo para posições de tecnologia.</li>
+              <li>Capacitação de Tech Leads em critérios de avaliação de talentos técnicos; mapeamento de perfis críticos (Software, DevOps, Dados, HPC/ROS) e parcerias acadêmicas.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag tag-blue">Python</span>
+              <span class="tag tag-purple">Power BI</span>
+              <span class="tag tag-green">Gupy ATS</span>
+              <span class="tag tag-blue">SharePoint</span>
+              <span class="tag tag-orange">KPIs Analytics</span>
+              <span class="tag tag-cyan">HR Systems</span>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROJETOS ═══ -->
+  <section id="projetos">
+    <div class="section-inner">
+      <div class="section-label">Projetos</div>
+      <h2 class="section-title">Sistemas analíticos para decisão em People</h2>
+      <p class="section-sub">Cada case mostra mais do que visualização: mostra como transformo operação, critérios e dados dispersos em uma camada de decisão utilizável.</p>
+
+      <div class="projects-grid fade-up">
+
+        <!-- NextGen 2026 -->
+        <div class="project-card">
+          <div class="project-banner" style="background: linear-gradient(90deg, #667eea, #764ba2);"></div>
+          <div class="project-body">
+            <div class="project-header">
+              <div class="project-icon" style="background: rgba(102,126,234,0.15); color: #818cf8;">
+                <i class="fas fa-funnel-dollar"></i>
+              </div>
+            </div>
+            <div>
+              <div class="project-title">CI&T NextGen 2026 — Dashboard Principal</div>
+              <div class="project-subtitle">Autonomia Decisória · Data logic + interface</div>
+            </div>
+            <p class="project-desc">
+              Mais do que um dashboard, este projeto funciona como camada central de decisão para um programa em escala. Consolida múltiplas fontes, deduplica candidatos, define thresholds claros de aprovação e habilita lideranças a decidir estrategicamente em tempo real.
+            </p>
+            <div class="project-metrics">
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#818cf8;">17.5k+</div>
+                <div class="project-metric-label">candidatos</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#34d399;">90%</div>
+                <div class="project-metric-label">↓ tempo análise</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#fbbf24;">5</div>
+                  <div class="project-metric-label">camadas decisórias</div>
+              </div>
+            </div>
+            <div class="project-footer">
+              <div class="project-stack">
+                <span class="tag tag-blue">GAS</span>
+                <span class="tag tag-purple">HtmlService</span>
+                <span class="tag tag-orange">D&I Analytics</span>
+                <span class="tag tag-cyan">Inferencial</span>
+                <span class="tag tag-pink">Descritiva</span>
+              </div>
+              <a href="nextgen-demo.html" class="btn" style="background: #ffffff; color: #0a0f1e; padding: 0.45rem 0.9rem; font-size: 0.75rem; font-weight: 700; border: none; border-radius: 8px; box-shadow: 0 0 25px rgba(255,255,255,0.6);" onmouseover="this.style.boxShadow='0 0 35px rgba(255,255,255,0.9)'" onmouseout="this.style.boxShadow='0 0 25px rgba(255,255,255,0.6)'">
+                <i class="fas fa-chart-pie"></i> Demo c/ Dados Fictícios
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Happy Feet Global Mobility -->
+        <div class="project-card">
+          <div class="project-banner" style="background: linear-gradient(90deg, #10b981, #047857);"></div>
+          <div class="project-body">
+            <div class="project-header">
+              <div class="project-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                <i class="fas fa-shoe-prints"></i>
+              </div>
+            </div>
+            <div>
+              <div class="project-title">Happy Feet — Global Internal Mobility Dash</div>
+              <div class="project-subtitle">Internal Recruitment Analytics · Fluxos Operacionais & SLA</div>
+            </div>
+            <p class="project-desc">
+              Estruturação end-to-end do dashboard do programa global de mobilidade interna. Processamento de +40 variáveis do colaborador (tenure, engajamento, senioridade) e da vaga para mapear fluxos vitais entre diferentes áreas e regiões (GUs). Geração de diagnósticos de negócio focados na saúde do recrutamento: gargalos de SLA, balança intergrupos, conversão VS reaplicação, e tempos ociosos (IDLE) por perfil de vagas.
+            </p>
+            <div class="project-metrics">
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#34d399;">SLA</div>
+                  <div class="project-metric-label">Lead Time e gargalos</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#10b981;">Fluxo</div>
+                  <div class="project-metric-label">Balança entre GUs</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#fbbf24;">IDLE</div>
+                  <div class="project-metric-label">gestão de ociosidade</div>
+              </div>
+            </div>
+            <div class="project-footer">
+              <div class="project-stack">
+                <span class="tag tag-blue">People Analytics</span>
+                <span class="tag tag-cyan">Internal Mobility</span>
+                <span class="tag tag-purple">Descritiva</span>
+                <span class="tag tag-orange">Inferencial</span>
+                <span class="tag tag-pink">SLA Tracking</span>
+                <span class="tag tag-green">Looker</span>
+                <span class="tag tag-yellow">Power BI</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Campanhas -->
+        <div class="project-card">
+          <div class="project-banner" style="background: linear-gradient(90deg, #3b82f6, #06b6d4);"></div>
+          <div class="project-body">
+            <div class="project-header">
+              <div class="project-icon" style="background: rgba(59,130,246,0.15); color: #60a5fa;">
+                <i class="fas fa-bullhorn"></i>
+              </div>
+            </div>
+            <div>
+              <div class="project-title">Dashboard Campanhas de Vagas</div>
+              <div class="project-subtitle">Recruitment marketing analytics · investimento + conversão + leitura de negócio</div>
+            </div>
+            <p class="project-desc">
+              Estrutura de leitura para atração de talentos com foco em decisão de investimento. Conecta mídia, vagas, regiões, aplicações e hired para tornar explícita a eficiência do topo de funil e orientar priorização de budget com base em conversão, não só em volume.
+            </p>
+            <div class="project-metrics">
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#60a5fa;">6</div>
+                  <div class="project-metric-label">sinais de eficiência</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#34d399;">100%</div>
+                  <div class="project-metric-label">leitura segmentável</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#fbbf24;">ROI</div>
+                  <div class="project-metric-label">para decisão de mídia</div>
+              </div>
+            </div>
+            <div class="project-footer">
+              <div class="project-stack">
+                <span class="tag tag-blue">GAS</span>
+                <span class="tag tag-cyan">Media Analytics</span>
+                <span class="tag tag-orange">Budget Tracking</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Throughput -->
+        <div class="project-card">
+          <div class="project-banner" style="background: linear-gradient(90deg, #1e3a5f, #8CB3D9);"></div>
+          <div class="project-body">
+            <div class="project-header">
+              <div class="project-icon" style="background: rgba(140,179,217,0.15); color: #8CB3D9;">
+                <i class="fas fa-tachometer-alt"></i>
+              </div>
+            </div>
+            <div>
+              <div class="project-title">TaskForce Hiring — Throughput Dashboard</div>
+              <div class="project-subtitle">Hiring operations · throughput · forecast · priorização operacional</div>
+            </div>
+            <p class="project-desc">
+              Estrutura executiva para transformar pipeline de vagas em capacidade operacional visível. Normaliza regiões e tipos de ação, organiza lanes de trabalho e entrega leitura de throughput, forecast e gargalos para coordenação de operação e estruturação do workforce planning.
+            </p>
+            <div class="project-metrics">
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#8CB3D9;">2</div>
+                  <div class="project-metric-label">lógicas operacionais</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#34d399;">3</div>
+                  <div class="project-metric-label">recortes regionais</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#fbbf24;">SLA</div>
+                  <div class="project-metric-label">previsibilidade operacional</div>
+              </div>
+            </div>
+            <div class="project-footer">
+              <div class="project-stack">
+                <span class="tag tag-blue">GAS</span>
+                <span class="tag tag-cyan">Workforce Metrics</span>
+                <span class="tag tag-green">Forecast</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BPs NextGen -->
+        <div class="project-card">
+          <div class="project-banner" style="background: linear-gradient(90deg, #690037, #8C0049);"></div>
+          <div class="project-body">
+            <div class="project-header">
+              <div class="project-icon" style="background: rgba(105,0,55,0.2); color: #f472b6;">
+                <i class="fas fa-user-graduate"></i>
+              </div>
+            </div>
+            <div>
+              <div class="project-title">BPs NextGen — Interns Dashboard</div>
+              <div class="project-subtitle">People governance · diversidade · alocação · cross-sheet logic</div>
+            </div>
+            <p class="project-desc">
+              Projeto orientado à governança de People após a aprovação. Cruza três fontes distintas para gerar uma visão confiável de diversidade, perfil acadêmico, alocação e acompanhamento de interns, reduzindo ruído entre bases e fortalecendo a leitura populacional.
+            </p>
+            <div class="project-metrics">
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#f472b6;">3</div>
+                  <div class="project-metric-label">bases consolidadas</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#34d399;">D&I</div>
+                  <div class="project-metric-label">governança populacional</div>
+              </div>
+              <div class="project-metric">
+                <div class="project-metric-val" style="color:#fbbf24;">2</div>
+                  <div class="project-metric-label">camadas de leitura</div>
+              </div>
+            </div>
+            <div class="project-footer">
+              <div class="project-stack">
+                <span class="tag tag-pink">GAS</span>
+                <span class="tag tag-purple">Neumorphic UI</span>
+                <span class="tag tag-green">D&I Analytics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SKILLS ═══ -->
+  <section id="skills">
+    <div class="section-inner">
+      <div class="section-label">Capacidades</div>
+      <h2 class="section-title">Capacidades técnicas e analíticas aplicadas a People</h2>
+      <p class="section-sub">Minha stack importa, mas o diferencial está em como ela é usada para estruturar decisão, operação e sistemas de RH.</p>
+
+      <div class="skills-grid fade-up">
+        
+        <div class="skills-group">
+          <div class="skills-group-title"><i class="fas fa-database"></i> Dados & Sistemas</div>
+          <div class="skills-list">
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">SQL</span>
+            <span class="skill-pill">Google Apps Script</span>
+            <span class="skill-pill">Integração de APIs</span>
+            <span class="skill-pill">Power BI & Looker</span>
+            <span class="skill-pill">IA</span>
+          </div>
+        </div>
+
+        <div class="skills-group">
+          <div class="skills-group-title"><i class="fas fa-chart-line"></i> Análise & Modelagem</div>
+          <div class="skills-list">
+            <span class="skill-pill">Regressão Linear</span>
+            <span class="skill-pill">Análise Descritiva</span>
+            <span class="skill-pill">Análise Inferencial</span>
+            <span class="skill-pill">D&I Analytics</span>
+          </div>
+        </div>
+
+        <div class="skills-group">
+          <div class="skills-group-title"><i class="fas fa-sitemap"></i> Decisão & Governança</div>
+          <div class="skills-list">
+            <span class="skill-pill">Thresholds de Decisão</span>
+            <span class="skill-pill">Governança de Dados</span>
+            <span class="skill-pill">Workforce Planning</span>
+            <span class="skill-pill">VSM / Lean</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EDUCAÇÃO ═══ -->
+  <section id="educacao">
+    <div class="section-inner">
+      <div class="section-label">Formação</div>
+      <h2 class="section-title">Educação</h2>
+
+      <div class="edu-grid fade-up">
+        <div class="edu-card">
+          <div class="edu-icon" style="background: rgba(99,102,241,0.12); color: var(--accent);">
+            <i class="fas fa-university"></i>
+          </div>
+          <div>
+            <div class="edu-degree">Bacharelado em Psicologia</div>
+            <div class="edu-inst">Universidade Salvador (UNIFACS)</div>
+            <div class="edu-period">Janeiro 2018 – Janeiro 2023</div>
+          </div>
+        </div>
+        <div class="edu-card">
+          <div class="edu-icon" style="background: rgba(52,211,153,0.12); color: var(--success);">
+            <i class="fas fa-language"></i>
+          </div>
+          <div>
+            <div class="edu-degree">Inglês — Nível Avançado / Bilíngue</div>
+            <div class="edu-inst">Certificação de Proficiência Avançada</div>
+            <div class="edu-period">Full Professional Proficiency</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTATO ═══ -->
+  <section id="contato">
+    <div class="section-inner">
+      <div class="contact-wrapper fade-up">
+        <div class="section-label" style="justify-content: center;">Contato</div>
+        <h2 class="section-title">Vamos conversar?</h2>
+        <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 500px; margin: 0 auto;">
+          Aberto a oportunidades em People Analytics, HR Systems & Automation, especialmente em contextos onde seja preciso estruturar decisão, integrar sistemas e transformar operação de People com dados.
+        </p>
+        <div class="contact-links">
+          <a class="contact-link" href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener">
+            <i class="fab fa-linkedin" style="color: #0a66c2;"></i> LinkedIn
+          </a>
+          <a class="contact-link" href="Profile (19).pdf" target="_blank">
+            <i class="fas fa-file-pdf" style="color: #ef4444;"></i> Baixar CV
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <p>Construído por <span>Israel Gilbernon</span> · People Analytics · HR Systems & Automation · 2026</p>
+  </footer>
+
+  <script>
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Nav scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('.nav');
+      nav.style.background = window.scrollY > 60
+        ? 'rgba(10,15,30,0.97)'
+        : 'rgba(10,15,30,0.85)';
+    });
+
+    // Active nav link
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 100) current = s.getAttribute('id');
+      });
+      navLinks.forEach(a => {
+        a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--accent)' : '';
+      });
+    });
+  </script>
+</body>
+</html>
