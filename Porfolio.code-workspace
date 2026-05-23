@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Dashboards Gerais/BPs Next Gen"
+		},
+		{
+			"path": "../Dashboards Gerais/Dashboard Campanha"
+		},
+		{
+			"path": "../Dashboards Gerais/Next Gen"
+		},
+		{
+			"path": "../Dashboards Gerais/Throughput"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Porfolio"
+	}
+}
